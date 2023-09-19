@@ -1,7 +1,7 @@
 function isSolution(solution::BitMatrix)
     for i in axes(solution,1)
         for j in i+1:size(solution,1)
-            if y[i,:]' * y[j,:] != j-i
+            if solution[i,:]' * solution[j,:] != j-i
                 return false
             end
         end
@@ -105,6 +105,27 @@ function canonicalize(solution::BitMatrix)
     result = BitMatrix(undef,size(solution,1),0)
     for i in target
         result = hcat(result,solution[:,i])
+    end
+
+    return result
+end
+
+function shrink(solution::BitMatrix)
+    result = Vector{BitMatrix}()
+    for i in axes(solution,1)
+        target = solution[1:size(solution,1) .≠ i, :]
+
+        important = Vector{Integer}()
+        for j in axes(target,2)
+            if sum(target[:,j]) != 1
+                push!(important,j)
+            end
+        end
+
+        target = target[:,important]
+        if isSolution(target)
+            push!(result,target)
+        end
     end
 
     return result
