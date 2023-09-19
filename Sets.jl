@@ -1,4 +1,13 @@
-
+function isSolution(solution::BitMatrix)
+    for i in axes(solution,1)
+        for j in i+1:size(solution,1)
+            if y[i,:]' * y[j,:] != j-i
+                return false
+            end
+        end
+    end
+    return true
+end
 
 function printSolution(solution::BitMatrix)
     sizes = size(solution)
