@@ -1,4 +1,4 @@
-using Combinatorics
+
 
 function printSolution(solution::BitMatrix)
     sizes = size(solution)
@@ -61,3 +61,42 @@ function BruteForceSearch(n::Integer,k::Integer)
     return solutions
 end
 
+function canonicalize(solution::BitMatrix) 
+    numbering = [collect(1:size(solution,2))]
+    for i in axes(solution,1)
+
+        newNumbering = empty(numbering)
+        for s in eachindex(numbering)
+            set = numbering[s]
+            intersection = empty(set)
+            complement = empty(set)
+            for j in set
+                if solution[i,j]
+                    push!(intersection,j)
+                else
+                    push!(complement,j)
+                end
+            end
+
+            if !isempty(intersection) 
+                push!(newNumbering,intersection)
+            end
+
+            if !isempty(complement) 
+                push!(newNumbering,complement)
+            end
+
+        end
+
+        numbering = newNumbering
+    end
+
+    target = collect(Iterators.flatten(numbering))
+
+    result = BitMatrix(undef,size(solution,1),0)
+    for i in target
+        result = hcat(result,solution[:,i])
+    end
+
+    return result
+end
