@@ -130,3 +130,12 @@ function shrink(solution::BitMatrix)
 
     return result
 end
+
+function uniqueSolutions(n::Integer,k::Integer)
+    allSolutions = BruteForceSearch(n,k)
+    result = Set{BitMatrix}()
+    for s in allSolutions
+        push!(result,canonicalize(s))
+    end
+    return result
+end
