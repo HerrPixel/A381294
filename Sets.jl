@@ -1,3 +1,5 @@
+global happened = false
+
 function isSolution(solution::BitMatrix)
     for i in axes(solution, 1)
         for j in i+1:size(solution, 1)
@@ -136,29 +138,63 @@ function splitSets(sets::Vector{<:Vector{<:Integer}}, entry::BitVector)
     #println(sets)
     #println(entry)
     newNumbering = empty(sets)
-        for s in eachindex(sets)
-            set = sets[s]
-            intersection = empty(set)
-            complement = empty(set)
-            for j in set
-                if entry[j]
-                    push!(intersection, j)
-                else
-                    push!(complement, j)
-                end
+    for s in eachindex(sets)
+        set = sets[s]
+        intersection = empty(set)
+        complement = empty(set)
+        for j in set
+            if entry[j]
+                push!(intersection, j)
+            else
+                push!(complement, j)
             end
-
-            if !isempty(intersection)
-                push!(newNumbering, intersection)
-            end
-
-            if !isempty(complement)
-                push!(newNumbering, complement)
-            end
-
         end
 
-        return newNumbering
+        if !isempty(intersection)
+            push!(newNumbering, intersection)
+        end
+
+        if !isempty(complement)
+            push!(newNumbering, complement)
+        end
+
+    end
+
+    return newNumbering
+end
+
+function splitSets(sets::Vector{<:Vector{<:Integer}}, entry::Vector{<:Integer})
+    newNumbering = empty(sets)
+    for s in eachindex(sets)
+        set = sets[s]
+        intersection = empty(set)
+        complement = empty(set)
+        cocaCola = empty(set)
+        for j in set
+            if entry[j] == -1
+                push!(intersection, j)
+            elseif entry[j] == 1
+                push!(complement, j)
+            else
+                push!(cocaCola, j)
+            end
+        end
+
+        if !isempty(intersection)
+            push!(newNumbering, intersection)
+        end
+
+        if !isempty(complement)
+            push!(newNumbering, complement)
+        end
+
+        if !isempty(cocaCola)
+            push!(newNumbering, cocaCola)
+        end
+
+    end
+
+    return newNumbering
 end
 
 function uniqueSolutions(n::Integer, k::Integer)
@@ -171,61 +207,73 @@ function uniqueSolutions(n::Integer, k::Integer)
 end
 
 function smartSolutionFinder(n::Integer, k::Integer)
-    template = falses(k,n)
+    template = falses(k, n)
 
-    return SatisfyLayer([collect(1:k)],zeros(Int,k),template,1,n,1,Vector{BitMatrix}(),k)
+    return SatisfyLayer([collect(1:k)], zeros(Int, k), template, 1, n, 1, Vector{BitMatrix}(), k)
 end
 
-function SatisfyLayer(sets::Vector{<:Vector{<:Integer}}, chosen::Vector{<:Integer},currSolution::BitMatrix, depth::Integer, maxdepth::Integer, curr::Integer, solutions::Vector{<:BitMatrix},k::Integer)
-    if depth == maxdepth == curr 
-        currSolution[:,depth] = normalize(chosen)
-        push!(solutions,currSolution)
-        return solutions
+function SatisfyLayer(sets::Vector{<:Vector{<:Integer}}, chosen::Vector{<:Integer}, currSolution::BitMatrix, depth::Integer, maxdepth::Integer, curr::Integer, solutions::Vector{<:BitMatrix}, k::Integer)
+
+    if depth == maxdepth == curr
+        currSolution[:, depth] = normalize(chosen)
+        printSolution(BitMatrix(currSolution'))
+        #push!(solutions, currSolution)
+        #return solutions
+        return true
     end
 
     if depth == curr
 
-        zeroIndex = findfirst(x -> chosen[x[1]] == 0, sets)
+        newSets2 = splitSets(sets, chosen)
 
-        zeroSet = isnothing(zeroIndex) ? Vector{Int8}() : sets[zeroIndex]
+        zeroIndex = findfirst(x -> chosen[x[1]] == 0, newSets2)
+
+        zeroSet = isnothing(zeroIndex) ? Vector{Int8}() : newSets2[zeroIndex]
 
         #println(zeroSet)
         for i in 0:length(zeroSet)
             entryCopy = copy(chosen)
             currSolutionCopy = copy(currSolution)
 
+
+
             for j in eachindex(zeroSet)
                 entryCopy[zeroSet[j]] = j <= i ? 1 : -1
             end
 
-            currSolutionCopy[:,depth] = normalize(entryCopy)
-            newSets = splitSets(sets, currSolutionCopy[:,depth])
+            currSolutionCopy[:, depth] = normalize(entryCopy)
+            newSets = splitSets(sets, currSolutionCopy[:, depth])
 
-            #println(newSets)
+            #solutions = SatisfyLayer(newSets, zeros(Int, k), currSolutionCopy, depth + 1, maxdepth, 1, solutions, k)
 
-            solutions = SatisfyLayer(newSets,zeros(Int,k),currSolutionCopy,depth + 1, maxdepth, 1, solutions,k)
+            if SatisfyLayer(newSets, zeros(Int, k), currSolutionCopy, depth + 1, maxdepth, 1, solutions, k)
+                return true
+            end
         end
 
         #println(currSolution)
 
-        return solutions
+        #return solutions
+        return false
     end
 
-    remaining = depth - curr - overlap(normalize(chosen), currSolution[:,curr])
+    remaining = depth - curr - overlap(normalize(chosen), currSolution[:, curr])
     #println(currSolution[:,curr])
     #println(chosen)
     #println(overlap(normalize(chosen), currSolution[:,curr]))
     #println(remaining)
 
     if remaining < 0
-        return solutions
+        #return solutions
+        return false
     end
 
-    if remaining == 0
-        return SatisfyLayer(sets,chosen,currSolution,depth,maxdepth,curr + 1, solutions,k)
-    end
+    #if remaining == 0
 
-    choosable = beepBoop(sets, currSolution[:,curr], chosen)
+    #    return SatisfyLayer(sets, chosen, currSolution, depth, maxdepth, curr + 1, solutions, k)
+    #end
+
+    choosable = beepBoop(sets, currSolution[:, curr], chosen)
     sizes = map(x -> length(x), choosable)
     combinations = CombinationChoices(remaining, sizes)
 
@@ -240,20 +288,19 @@ function SatisfyLayer(sets::Vector{<:Vector{<:Integer}}, chosen::Vector{<:Intege
             end
         end
 
-        if depth == 3 && curr == 2 # lol(currSolution[:,2],entryCopy) != 0
-            println(currSolution[:,2])
-            println(entryCopy)
-            println(chosen)
-            println(sets)
-            println(choosable)
-            println(c)
+        #maybe even split the -1 and 0
+        newSets = splitSets(sets, normalize(entryCopy))
+        #solutions = SatisfyLayer(newSets, entryCopy, currSolution, depth, maxdepth, curr + 1, solutions, k)
+
+        if SatisfyLayer(newSets, entryCopy, currSolution, depth, maxdepth, curr + 1, solutions, k)
+            return true
         end
-        solutions = SatisfyLayer(sets,entryCopy,currSolution,depth,maxdepth,curr+1,solutions,k)
     end
 
-    return solutions
-end   
-    
+    #return solutions
+    return false
+end
+
 function lol(a::BitVector, b::Vector{<:Integer})
     count = 0
     for j in eachindex(b)
@@ -317,3 +364,5 @@ function getUnclaimed(target::BitVector, claimer::Vector{<:Integer})
 
 end
 # memory leak in uniqueSolutions
+
+#smartSolutionFinder(6, 15)
