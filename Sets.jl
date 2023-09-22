@@ -131,6 +131,36 @@ function shrink(solution::BitMatrix)
     return result
 end
 
+function splitSets(sets::Vector{<:Vector{<:Integer}}, entry::BitVector)
+    #println("here")
+    #println(sets)
+    #println(entry)
+    newNumbering = empty(sets)
+        for s in eachindex(sets)
+            set = sets[s]
+            intersection = empty(set)
+            complement = empty(set)
+            for j in set
+                if entry[j]
+                    push!(intersection, j)
+                else
+                    push!(complement, j)
+                end
+            end
+
+            if !isempty(intersection)
+                push!(newNumbering, intersection)
+            end
+
+            if !isempty(complement)
+                push!(newNumbering, complement)
+            end
+
+        end
+
+        return newNumbering
+end
+
 function uniqueSolutions(n::Integer, k::Integer)
     allSolutions = BruteForceSearch(n, k)
     result = Set{BitMatrix}()
@@ -141,39 +171,98 @@ function uniqueSolutions(n::Integer, k::Integer)
 end
 
 function smartSolutionFinder(n::Integer, k::Integer)
-    template = falses(n, k)
+    template = falses(k,n)
 
+    return SatisfyLayer([collect(1:k)],zeros(Int,k),template,1,n,1,Vector{BitMatrix}(),k)
 end
 
-function recursiveNewSetGenerator(n::Integer, k::Integer, level::Integer, solution::BitMatrix, sets::Vector{Vector{<:Integer}})
-
-    #for all levels smaller, calculate desired distance and current distance
-    entry = zeros(Int, k)
-    for i in 1:level-1
-        remaining = level - i - overlap(normalize(entry), solution[:, i])
-        intersec = intersection(sets, solution[:, i], entry)
-        sizes = map(x -> length(x), intersec)
-        combinations = CombinationChoices(remaining, sizes)
-        for c in combinations
-            for chosenIndex in eachindex(c)
-                for i in 1:c[chosenIndex]
-
-                end
-            end
-
-            for setIndex in eachindex(intersec)
-                set = intersec[setIndex]
-                for i in eachindex(set)
-                    entry[set[i]] = (i <= c[setIndex]) ? 1 : -1
-                end
-            end
-        end
+function SatisfyLayer(sets::Vector{<:Vector{<:Integer}}, chosen::Vector{<:Integer},currSolution::BitMatrix, depth::Integer, maxdepth::Integer, curr::Integer, solutions::Vector{<:BitMatrix},k::Integer)
+    if depth == maxdepth == curr 
+        currSolution[:,depth] = normalize(chosen)
+        push!(solutions,currSolution)
+        return solutions
     end
 
+    if depth == curr
 
+        zeroIndex = findfirst(x -> chosen[x[1]] == 0, sets)
+
+        zeroSet = isnothing(zeroIndex) ? Vector{Int8}() : sets[zeroIndex]
+
+        #println(zeroSet)
+        for i in 0:length(zeroSet)
+            entryCopy = copy(chosen)
+            currSolutionCopy = copy(currSolution)
+
+            for j in eachindex(zeroSet)
+                entryCopy[zeroSet[j]] = j <= i ? 1 : -1
+            end
+
+            currSolutionCopy[:,depth] = normalize(entryCopy)
+            newSets = splitSets(sets, currSolutionCopy[:,depth])
+
+            #println(newSets)
+
+            solutions = SatisfyLayer(newSets,zeros(Int,k),currSolutionCopy,depth + 1, maxdepth, 1, solutions,k)
+        end
+
+        #println(currSolution)
+
+        return solutions
+    end
+
+    remaining = depth - curr - overlap(normalize(chosen), currSolution[:,curr])
+    #println(currSolution[:,curr])
+    #println(chosen)
+    #println(overlap(normalize(chosen), currSolution[:,curr]))
+    #println(remaining)
+
+    if remaining < 0
+        return solutions
+    end
+
+    if remaining == 0
+        return SatisfyLayer(sets,chosen,currSolution,depth,maxdepth,curr + 1, solutions,k)
+    end
+
+    choosable = beepBoop(sets, currSolution[:,curr], chosen)
+    sizes = map(x -> length(x), choosable)
+    combinations = CombinationChoices(remaining, sizes)
+
+    for c in combinations
+
+        entryCopy = copy(chosen)
+
+        for setIndex in eachindex(choosable)
+            set = choosable[setIndex]
+            for i in eachindex(set)
+                entryCopy[set[i]] = (i <= c[setIndex]) ? 1 : -1
+            end
+        end
+
+        if depth == 3 && curr == 2 # lol(currSolution[:,2],entryCopy) != 0
+            println(currSolution[:,2])
+            println(entryCopy)
+            println(chosen)
+            println(sets)
+            println(choosable)
+            println(c)
+        end
+        solutions = SatisfyLayer(sets,entryCopy,currSolution,depth,maxdepth,curr+1,solutions,k)
+    end
+
+    return solutions
+end   
+    
+function lol(a::BitVector, b::Vector{<:Integer})
+    count = 0
+    for j in eachindex(b)
+        if a[j] && b[j] == 0
+            count += 1
+        end
+    end
+    return count
 end
-
-function SatisfyLayer(sets::Vector{Vector{<:Integer}})
 
 function CombinationChoices(number::Integer, sizes::Vector{<:Integer})
     return recursiveCombinations(number, 0, Vector{Vector{Int}}(), sizes, 1, Vector{Int}())
@@ -204,7 +293,7 @@ function overlap(a::BitVector, b::BitVector)
     return a' * b
 end
 
-function intersection(sets::Vector{<:Vector{<:Integer}}, selected::BitVector, entries::Vector{<:Integer})
+function beepBoop(sets::Vector{<:Vector{<:Integer}}, selected::BitVector, entries::Vector{<:Integer})
     result = empty(sets)
     for s in sets
         intersect = empty(s)
