@@ -8,16 +8,14 @@ For example, for $n = 4$, the answer would be $k = 5$, with which we could pick 
 $A_1 = \{1,2,3,4\}$  
 $A_2 = \{1,5\}$  
 $A_3 = \{1,2\}$  
-$A_4 = \{1,3,4\}$
-or as a more visual alternative:
+$A_4 = \{1,3,4\}$  
+or a more visual representation:
 
 ```
- |1|2|3|4|5
------------
-1|1|2|3|4|
-2|1| | | |5
-3|1|2| | |
-4|1| |3|4|5
+A₁:  1  2  3  4
+A₂:  1           5
+A₃:  1  2
+A₄:  1     3  4  5
 ```
 
 ## Current known values and bounds
