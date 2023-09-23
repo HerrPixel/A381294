@@ -44,11 +44,12 @@ A₄:  1     3  4  5
 | $19$ | $468$            | -                  | -                      |
 | $20$ | $547$            | -                  | -                      |
 | $21$ | $\leq 630$       | -                  | -                      |
+| $22$ | $\leq 728$       | -                  | -                      |
 
 -   `n`:
     Number of Sets as described in the introduction above
 -   `estimate of k`:
-    Current best solution found by solving an optimization problem over the number of used numbers
+    Current best solution found by solving a linear optimization problem over the number of used numbers
 -   `Confirmed optimal?`:
     Independently found the same lower bound by checking all possibilities with a combinatorial approach and then finding a solution for $k$
 -   `Nr or unique solutions`:
