@@ -251,17 +251,12 @@ function SatisfyLayer(sets::Vector{<:Vector{<:Integer}}, chosen::Vector{<:Intege
             end
         end
 
-        #println(currSolution)
 
         #return solutions
         return false
     end
 
     remaining = depth - curr - overlap(normalize(chosen), currSolution[:, curr])
-    #println(currSolution[:,curr])
-    #println(chosen)
-    #println(overlap(normalize(chosen), currSolution[:,curr]))
-    #println(remaining)
 
     if remaining < 0
         #return solutions
