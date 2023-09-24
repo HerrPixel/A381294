@@ -68,9 +68,7 @@ $ julia --project=.
 
 julia>
 
-
 # Press ] to get into pkg
-
 
 (SetProblem) pkg> instantiate
 ```
