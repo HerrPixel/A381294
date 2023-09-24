@@ -54,3 +54,37 @@ A₄:  1     3  4  5
     Independently found the same lower bound by checking all possibilities with a combinatorial approach and then finding a solution for $k$
 -   `Nr or unique solutions`:
     Given a solution, you can rename the used numbers to get another solution that is "equivalent", i.e. if a set contained a $2$, it now instead contains a $5$ and if a set contained a $5$, it now contains a $2$. You can also invert the set numbering, such that $A_1 = A'_n$, $A_2 = A'_{n-1}$, $\dots$ and so on to also get another solution. Ignoring all those equivalent solution and just counting the number of equivalence classes of minimal solutions we arrive at the number of unique solutions
+
+## Trying out the solver yourself
+
+The combinatorial solver is written in [Julia](https://julialang.org/).
+
+To run it yourself, install Julia, for example with [Juliaup](https://github.com/JuliaLang/juliaup).
+
+You then first need to instantiate the project to set up the environment and download all the dependencies:
+
+```bash
+$ julia --project=.
+
+julia>
+
+
+# Press ] to get into pkg
+
+
+(SetProblem) pkg> instantiate
+```
+
+You only need to do this once, afterwards you can always run the solver by using the `SetProblem` module and calling the `smartSolutionFinder(n,k)`:
+
+```bash
+$ julia --project=.
+
+julia> using SetProblem
+
+julia> smartSolutionFinder(4,5)
+A₁:  1  2  3  4
+A₂:  1           5
+A₃:  1  2
+A₄:  1     3  4  5
+```
