@@ -18,10 +18,59 @@ struct SetSolution
     end
 end
 
-function getN(s::SetSolution)
+function GetN(s::SetSolution)
     return s.n
 end
 
-function getK(s::SetSolution)
+function GetK(s::SetSolution)
     return s.k
+end
+
+function getindex(s::SetSolution, row::Integer, column::Integer)
+    if 1 ≤ row ≤ GetN(s) && 1 ≤ column ≤ GetK(s)
+        return s.matrix[column, row]
+    end
+    throw(BoundsError(BitMatrix(s.solutionmatrix'), [row, column]))
+end
+
+
+function PrintSolution(s::SetSolution)
+    sizes = size(solution)
+    width = sizes[2]
+
+    # To make the output aligned, we calculate the maximum width a cell could need
+    # The display of the chosen numbers in the sets takes up the number of digits as width
+    cellwidth = ceil(Int, log(10, width))
+
+    # The width of the first column is 1 + number of digits in the indices, the first one being for the 'A'
+    setnumberingwidth = 1 + ceil(Int, log(10, getN(s)))
+
+    for i in 1:getN(s)
+
+        println()
+        print(rpad("A" * SubscriptNumber(i), setnumberingwidth))
+        print(":")
+
+        for j in 1:GetK(s)
+            print(" ")
+            c = s[i, j] ? string(j) : ""
+            print(lpad(c, cellwidth))
+        end
+    end
+
+    println()
+    println()
+end
+
+# Taken from https://stackoverflow.com/a/64758370
+function SubscriptNumber(i::Int)
+    if i < 0
+        c = [Char(0x208B)]
+    else
+        c = []
+    end
+    for d in reverse(digits(abs(i)))
+        push!(c, Char(0x2080 + d))
+    end
+    return join(c)
 end
