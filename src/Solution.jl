@@ -4,7 +4,7 @@ struct SetSolution
     k::Integer
 
     function SetSolution(matrix::BitMatrix)
-        return new(matrix, size(matrix, 2), size(matrix, 1))
+        return new(matrix, size(matrix, 1), size(matrix, 2))
     end
 
     function SetSolution(rows::Vector{<:Vector{<:Integer}})
@@ -14,7 +14,7 @@ struct SetSolution
                 reduce(hcat, a)'
             ))
 
-        return new(matrix, size(matrix, 2), size(matrix, 1))
+        return new(matrix, size(matrix, 1), size(matrix, 2))
     end
 end
 
@@ -26,21 +26,20 @@ function GetK(s::SetSolution)
     return s.k
 end
 
-function getindex(s::SetSolution, row::Integer, column::Integer)
+function Base.getindex(s::SetSolution, row::Integer, column::Integer)
     if 1 ≤ row ≤ GetN(s) && 1 ≤ column ≤ GetK(s)
-        return s.matrix[column, row]
+        return s.solutionmatrix[row, column]
     end
-    throw(BoundsError(BitMatrix(s.solutionmatrix'), [row, column]))
+    throw(BoundsError(s.solutionmatrix, [row, column]))
 end
 
 
 function PrintSolution(s::SetSolution)
     sizes = size(solution)
-    width = sizes[2]
 
     # To make the output aligned, we calculate the maximum width a cell could need
     # The display of the chosen numbers in the sets takes up the number of digits as width
-    cellwidth = ceil(Int, log(10, width))
+    cellwidth = ceil(Int, log(10, s.GetK))
 
     # The width of the first column is 1 + number of digits in the indices, the first one being for the 'A'
     setnumberingwidth = 1 + ceil(Int, log(10, getN(s)))
