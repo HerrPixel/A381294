@@ -8,7 +8,7 @@ For example, for $n = 4$, the answer would be $k = 5$, with which we could pick 
 $A_1 = \{1,2,3,4\}$  
 $A_2 = \{1,5\}$  
 $A_3 = \{1,2\}$  
-$A_4 = \{1,3,4\}$  
+$A_4 = \{1,3,4,5\}$  
 or a more visual representation:
 
 ```
