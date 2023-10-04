@@ -20,6 +20,8 @@ A₄:  1     3  4  5
 
 ## Current known values and bounds
 
+Where a lower bound for $k$ is given, it is known from the optimal solution of the equivalent LP problem. In all cases with the exact value of $k$ known, it coincides with that optimal solution.
+
 | $n$  | estimate for $k$ | Confirmed optimal? | Nr of unique solutions |
 | ---- | ---------------- | ------------------ | ---------------------- |
 | $0$  | $0$              | yes                | $1$                    |
@@ -43,8 +45,16 @@ A₄:  1     3  4  5
 | $18$ | $398$            | -                  | -                      |
 | $19$ | $468$            | -                  | -                      |
 | $20$ | $547$            | -                  | -                      |
-| $21$ | $\leq 630$       | -                  | -                      |
-| $22$ | $\leq 728$       | -                  | -                      |
+| $21$ | $630$            | -                  | -                      |
+| $22$ | $728$            | -                  | -                      |
+| $23$ | $\ge 827$        | -                  | -                      |
+| $24$ | $\ge 944$        | -                  | -                      |
+| $25$ | $\ge 1064$       | -                  | -                      |
+| $26$ | $\ge 1198$       | -                  | -                      |
+| $27$ | $\ge 1341$       | -                  | -                      |
+| $28$ | $\ge 1493$       | -                  | -                      |
+| $29$ | $\ge 1661$       | -                  | -                      |
+| $30$ | $\ge 1838$       | -                  | -                      |
 
 -   `n`:
     Number of Sets as described in the introduction above
