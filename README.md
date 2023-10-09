@@ -57,6 +57,9 @@ Where an upper bound for $k$ is given, it is known from a constructed solution.
 | $28$ | $\le 1493$       | -                  | -                      |
 | $29$ | $\le 1661$       | -                  | -                      |
 | $30$ | $\le 1838$       | -                  | -                      |
+| $31$ | $\le 2028$       | -                  | -                      |
+| $32$ | $\le 2235$       | -                  | -                      |
+| $33$ | $\le 2444$       | -                  | -                      |
 
 -   `n`:
     Number of Sets as described in the introduction above
