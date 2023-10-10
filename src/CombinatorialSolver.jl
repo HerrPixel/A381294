@@ -47,12 +47,7 @@ function Base.setindex!(p::PartialLayer, v::Integer, i::Integer)
 end
 
 function normalize(p::PartialLayer)
-    b = falses(length(p.layer))
-
-    for i in 1:length(p.layer)
-        b[i] = chosen(p, i)
-    end
-    return b
+    return BitVector(map(x -> x > 0, p.layer))
 end
 
 function overlap(a::BitVector, b::BitVector)
@@ -96,10 +91,17 @@ function splitEquivalenceClasses(c::EquivalenceClasses, b::BitVector)
     return EquivalenceClasses(resultingClasses)
 end
 
+function sl(c::EquivalenceClasses, b::BitVector)
+    return EquivalenceClasses(filter(x -> !isempty(x), mapreduce(x -> [filter(y -> b[y], x), filter(y -> !b[y], x)], vcat, c.classes)))
+end
+
 function CombinatorialSolver(n::Integer, k::Integer)
+    min, max = calculateBounds(n, k)
     return CombinatorialSolverRecursion(
         n,
         k,
+        min,
+        max,
         EquivalenceClasses([collect(1:k)]),
         Vector{BitVector}(),
         PartialLayer(zeros(Int, k)),
@@ -109,9 +111,53 @@ function CombinatorialSolver(n::Integer, k::Integer)
     )
 end
 
+function solver2(n::Integer, k::Integer)
+    low, high = calculateBounds(n, k)
+    return CombinatorialSolverRecursion2(
+        n,
+        k,
+        low,
+        high,
+        EquivalenceClasses([collect(1:k)]),
+        Vector{BitVector}(),
+        Vector{SetSolution}()
+    )
+end
+
+function CombinatorialSolverRecursion2(
+    N::Integer,
+    K::Integer,
+    lowerBounds::Vector{<:Integer},
+    upperBounds::Vector{<:Integer},
+    DigitEquivalenceClasses::EquivalenceClasses,
+    Layers::Vector{BitVector},
+    #CurrentLayer::PartialLayer,
+    #CurrentLayerIndex::Integer,
+    #ReferenceLayerIndex::Integer,
+    Solutions::Vector{SetSolution})
+
+    if length(Layers) == N
+        push!(Solutions, SetSolution(Layers))
+        return Solutions
+    end
+
+    for b in yolo(Layers, DigitEquivalenceClasses, K, lowerBounds[length(Layers)+1], upperBounds[length(Layers)+1])
+        LayersCopy = copy(Layers)
+        push!(LayersCopy, b)
+
+        eqClasses = sl(DigitEquivalenceClasses, b)
+
+        Solutions = CombinatorialSolverRecursion2(N, K, lowerBounds, upperBounds, eqClasses, LayersCopy, Solutions)
+    end
+
+    return Solutions
+end
+
 function CombinatorialSolverRecursion(
     N::Integer,
     K::Integer,
+    min::Vector{<:Integer},
+    max::Vector{<:Integer},
     DigitEquivalenceClasses::EquivalenceClasses,
     Layers::Vector{BitVector},
     CurrentLayer::PartialLayer,
@@ -133,6 +179,8 @@ function CombinatorialSolverRecursion(
         return FinishLayer(
             N,
             K,
+            min,
+            max,
             DigitEquivalenceClasses,
             Layers,
             CurrentLayer,
@@ -145,6 +193,8 @@ function CombinatorialSolverRecursion(
     return SatisfyReferenceLayer(
         N,
         K,
+        min,
+        max,
         DigitEquivalenceClasses,
         Layers,
         CurrentLayer,
@@ -154,8 +204,11 @@ function CombinatorialSolverRecursion(
     )
 end
 
-function FinishLayer(N::Integer,
+function FinishLayer(
+    N::Integer,
     K::Integer,
+    min2::Vector{<:Integer},
+    max::Vector{<:Integer},
     DigitEquivalenceClasses::EquivalenceClasses,
     Layers::Vector{BitVector},
     CurrentLayer::PartialLayer,
@@ -174,7 +227,8 @@ function FinishLayer(N::Integer,
         UndecidedElements = DigitEquivalenceClasses[end]
 
         # choose some amount of undecided elements to pick and recurse for each possibility
-        for i in 0:length(UndecidedElements)
+        for i in min2[CurrentLayerIndex]:min(length(UndecidedElements), max[CurrentLayerIndex])
+            #for i in 0:length(UndecidedElements)
 
             # Optimizations possible, maybe with a mapping function on PartialLayers
             CurrentLayerCopy = deepcopy(CurrentLayer)
@@ -191,6 +245,8 @@ function FinishLayer(N::Integer,
             Solutions = CombinatorialSolverRecursion(
                 N,
                 K,
+                min2,
+                max,
                 resultingEquivalenceClasses,
                 LayersCopy,
                 PartialLayer(zeros(Int, K)),
@@ -208,6 +264,8 @@ function FinishLayer(N::Integer,
         return CombinatorialSolverRecursion(
             N,
             K,
+            min2,
+            max,
             DigitEquivalenceClasses,
             LayersCopy,
             PartialLayer(zeros(Int, K)),
@@ -221,6 +279,8 @@ end
 function SatisfyReferenceLayer(
     N::Integer,
     K::Integer,
+    min::Vector{<:Integer},
+    max::Vector{<:Integer},
     DigitEquivalenceClasses::EquivalenceClasses,
     Layers::Vector{BitVector},
     CurrentLayer::PartialLayer,
@@ -258,6 +318,8 @@ function SatisfyReferenceLayer(
         Solutions = CombinatorialSolverRecursion(
             N,
             K,
+            min,
+            max,
             resultingEquivalenceClasses,
             Layers,
             CurrentLayerCopy,
@@ -276,7 +338,8 @@ function CombinationsToN(N::Integer, Elements::Vector{<:Integer})
 end
 
 function CombinationsToNRecursion(
-    N::Integer, CurrentValue::Integer,
+    N::Integer,
+    CurrentValue::Integer,
     CurrentIndex::Integer,
     CurrentCombination::Vector{<:Integer},
     Solutions::Vector{<:Vector{<:Integer}},
@@ -307,4 +370,93 @@ function CombinationsToNRecursion(
     end
 
     return Solutions
+end
+
+function yolo(Layers::Vector{BitVector}, DigitEquivalenceClasses::EquivalenceClasses, k::Integer, LowerBoundForFreeElements::Integer, UpperBoundForFreeElements::Integer)
+    return lolRecursion(Layers, DigitEquivalenceClasses, 1, Vector{BitVector}(), falses(k), zeros(Int, length(Layers)), !mapreduce(x -> x[end], |, Layers, init=false), LowerBoundForFreeElements, UpperBoundForFreeElements)
+end
+
+function lolRecursion(Layers::Vector{BitVector}, DigitEquivalenceClasses::EquivalenceClasses, CurrentClassIndex::Integer, Solutions::Vector{BitVector}, CurrentCombination::BitVector, CurrentOverlaps::Vector{<:Integer}, HasFreeElements::Bool, LowerBoundForFreeElements::Integer, UpperBoundForFreeElements::Integer)
+
+    if CurrentClassIndex > length(DigitEquivalenceClasses.classes)
+        for j in 1:length(CurrentOverlaps)
+            if CurrentOverlaps[end-(j-1)] != j
+                return Solutions
+            end
+        end
+        push!(Solutions, CurrentCombination)
+        return Solutions
+    end
+
+    if CurrentClassIndex == length(DigitEquivalenceClasses.classes) && HasFreeElements
+
+        for j in 1:length(CurrentOverlaps)
+            if CurrentOverlaps[end-(j-1)] != j
+                return Solutions
+            end
+        end
+
+        for i in LowerBoundForFreeElements:min(UpperBoundForFreeElements, length(DigitEquivalenceClasses.classes[end]))
+
+            CurrentCombinationCopy = copy(CurrentCombination)
+
+            for j in 1:i
+                CurrentCombinationCopy[DigitEquivalenceClasses[end][j]] = true
+            end
+
+            push!(Solutions, CurrentCombinationCopy)
+        end
+
+        return Solutions
+    end
+
+    for i in 0:length(DigitEquivalenceClasses[CurrentClassIndex])
+
+        CurrentCombinationCopy = copy(CurrentCombination)
+        CurrentOverlapsCopy = copy(CurrentOverlaps)
+
+        for j in 1:i
+            CurrentCombinationCopy[DigitEquivalenceClasses[CurrentClassIndex][j]] = true
+            CurrentOverlapsCopy += map(x -> x[DigitEquivalenceClasses[CurrentClassIndex][j]], Layers)
+        end
+
+        isValid = true
+        for j in 1:length(CurrentOverlapsCopy)
+            if CurrentOverlapsCopy[end-(j-1)] > j
+                isValid = false
+                break
+            end
+        end
+
+        if !isValid
+            break
+        end
+
+        Solutions = lolRecursion(Layers, DigitEquivalenceClasses, CurrentClassIndex + 1, Solutions, CurrentCombinationCopy, CurrentOverlapsCopy, HasFreeElements, LowerBoundForFreeElements, UpperBoundForFreeElements)
+    end
+
+    return Solutions
+end
+
+function calculateBounds(n::Integer, k::Integer)
+    lowerBounds = Vector{Int}()
+    upperBounds = Vector{Int}()
+
+    for i in 1:n
+        lowerBound = -1 * triangularNumber(i - 1)
+        for j in 0:div(n, 2)
+            lowerBound += max(0, n - i - j - triangularNumber(j))
+        end
+        push!(lowerBounds, max(0, lowerBound))
+    end
+
+    for i in 1:n
+        push!(upperBounds, k - sum(lowerBounds) + lowerBounds[i])
+    end
+
+    return lowerBounds, upperBounds
+end
+
+function triangularNumber(n::Integer)
+    return n * (n + 1) / 2
 end
