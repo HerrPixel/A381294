@@ -62,6 +62,7 @@ Where an upper bound for $k$ is given, it is known from a constructed solution.
 | $33$ | $\le 2444$       | -                  | -                      |
 | $34$ | $\le 2680$       | -                  | -                      |
 | $35$ | $\le 2918$       | -                  | -                      |
+| $36$ | $\le 3179$       | -                  | -                      |
 
 -   `n`:
     Number of Sets as described in the introduction above
