@@ -22,6 +22,8 @@ A₄:  1     3  4  5
 
 Where a lower bound for $k$ is given, it is known from the optimal solution of the equivalent LP problem. In all cases with the exact value of $k$ known, it coincides with that optimal solution.
 
+Where an upper bound for $k$ is given, it is known from a constructed solution.
+
 | $n$  | estimate for $k$ | Confirmed optimal? | Nr of unique solutions |
 | ---- | ---------------- | ------------------ | ---------------------- |
 | $0$  | $0$              | yes                | $1$                    |
@@ -47,14 +49,20 @@ Where a lower bound for $k$ is given, it is known from the optimal solution of t
 | $20$ | $547$            | -                  | -                      |
 | $21$ | $630$            | -                  | -                      |
 | $22$ | $728$            | -                  | -                      |
-| $23$ | $\ge 827$        | -                  | -                      |
-| $24$ | $\ge 944$        | -                  | -                      |
-| $25$ | $\ge 1064$       | -                  | -                      |
-| $26$ | $\ge 1198$       | -                  | -                      |
-| $27$ | $\ge 1341$       | -                  | -                      |
-| $28$ | $\ge 1493$       | -                  | -                      |
-| $29$ | $\ge 1661$       | -                  | -                      |
-| $30$ | $\ge 1838$       | -                  | -                      |
+| $23$ | $\le 827$        | -                  | -                      |
+| $24$ | $\le 944$        | -                  | -                      |
+| $25$ | $\le 1064$       | -                  | -                      |
+| $26$ | $\le 1198$       | -                  | -                      |
+| $27$ | $\le 1341$       | -                  | -                      |
+| $28$ | $\le 1493$       | -                  | -                      |
+| $29$ | $\le 1661$       | -                  | -                      |
+| $30$ | $\le 1838$       | -                  | -                      |
+| $31$ | $\le 2027$       | -                  | -                      |
+| $32$ | $\le 2232$       | -                  | -                      |
+| $33$ | $\le 2442$       | -                  | -                      |
+| $34$ | $\le 2680$       | -                  | -                      |
+| $35$ | $\le 2918$       | -                  | -                      |
+| $36$ | $\le 3179$       | -                  | -                      |
 
 -   `n`:
     Number of Sets as described in the introduction above
