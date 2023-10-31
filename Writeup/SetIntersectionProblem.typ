@@ -2,6 +2,45 @@
 #set text(font: "New Computer Modern")
 #show heading: set block(above: 1.4em, below: 1em)
 
+#let titlepage(title:[],authors: ()) = {
+    set align(center+horizon)
+    page(margin:0pt,
+    [
+
+        #place(top + left,
+            line(start: (100pt,0pt),end: (0pt,100pt))
+        )
+
+        #place(top + right,
+            line(start: (-100pt,0pt),end: (0pt,100pt))
+        )
+
+        #place(bottom + left,
+            line(start: (0pt,-100pt),end: (100pt,0pt))
+        )
+
+        #place(bottom + right,
+            line(start: (0pt,-100pt),end: (-100pt,0pt))
+        )
+
+        #set text(size:20pt)
+        #strong(title) \
+
+        #if authors.len() != 0 {
+            set text(size:15pt)
+            "By " + authors.join(", ", last: " and ")
+        }
+    ])
+}
+
+#titlepage(
+    title: [
+        Set Intersection with Minimal Support \        
+        The SIMS-Problem
+    ],
+    authors: ("Jonas Seiler", "Cecilia Knäbchen")
+)
+
 = Problem definition
 
 Given a number $n in NN$, find the minimal number $k in NN$ such that there are $n$ sets $A_1, dots, A_n$ containing numbers in $[k]$, i.e $A_i subset.eq \{1, dots, k\}$ satisfying:
