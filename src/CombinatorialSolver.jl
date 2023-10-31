@@ -66,16 +66,18 @@ function CombinatorialSolverRecursion(
 
     for b in NextLayers(Layers, DigitEquivalenceClasses, K, lowerBounds[length(Layers)+1], upperBounds[length(Layers)+1])
 
-        LayersCopy = copy(Layers)
-        push!(LayersCopy, b)
+        #LayersCopy = copy(Layers)
+        push!(Layers, b)
 
         eqClasses = splitEquivalenceClasses(DigitEquivalenceClasses, b)
 
-        Solutions = CombinatorialSolverRecursion(N, K, lowerBounds, upperBounds, eqClasses, LayersCopy, Solutions, printAllSolutions)
+        Solutions = CombinatorialSolverRecursion(N, K, lowerBounds, upperBounds, eqClasses, Layers, Solutions, printAllSolutions)
 
         if !isempty(Solutions) && !printAllSolutions
             return Solutions
         end
+
+        pop!(Layers)
     end
 
     return Solutions
