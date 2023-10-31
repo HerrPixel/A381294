@@ -33,7 +33,7 @@ Where an upper bound for $k$ is given, it is known from a constructed solution.
 | $4$  | $5$              | yes                | $1$                    |
 | $5$  | $9$              | yes                | $3$                    |
 | $6$  | $16$             | yes                | $15$                   |
-| $7$  | $24$             | -                  | -                      |
+| $7$  | $24$             | yes                | -                      |
 | $8$  | $36$             | -                  | -                      |
 | $9$  | $50$             | -                  | -                      |
 | $10$ | $70$             | -                  | -                      |
