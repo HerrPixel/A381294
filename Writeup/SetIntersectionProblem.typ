@@ -1,3 +1,5 @@
+#import "@preview/algo:0.3.3": algo, i, d, comment, code
+
 #set heading(numbering: "1.")
 #set text(font: "New Computer Modern")
 #show heading: set block(above: 1.4em, below: 1em)
@@ -133,6 +135,47 @@ Our formulation of this problem as an (I-)LP will be explained in @LPApproach
 #pagebreak()
 
 = Upper Bounds
+
+Our current best upper bound comes from an explicit construction. This bound is not tight, there are more optimal solutions starting from $n=6$, but we have not yet been able to derive a pattern out of those.
+
+Our construction works as follows:
+
+For each set-distance $i in {1,dots,n-1}$, and for each coset representative $a in {0,dots,i-1}$, if there are atleast $2$ two set indices $b,c in {1,dots,n}$ with $b mod i = c mod i = a$, i.e. they lie in the same coset, then define $phi(i)$ new unused numbers to add to all sets with indices in that coset and increase $k$ by $phi(i)$, the number of newly added and used numbers.
+
+For example, for $n = 6$, this constructions yields the following:
+```
+    i=1| i=2  |        i=3       |       i=4      |       i=5
+A₁:  1 | 2    | 4  5             | 10  11         | 14  15  16  17 
+A₂:  1 |    3 |       6  7       |         12  13 |
+A₃:  1 | 2    |             8  9 |                |
+A₄:  1 |    3 | 4  5             |                |
+A₅:  1 | 2    |       6  7       | 10  11         |
+A₆:  1 |    3 |             8  9 |         12  13 | 14  15  16  17
+```
+From this we can also see that this is not optimal, since for $n=6$, there is a solution with $k = 16$.
+
+#algo(
+    title: "ExplicitConstruction",
+    parameters: ("n",),
+    indent-guides: 1pt + black,
+    
+)[
+    $A_1,dots,A_n = {}$ \
+    $k = 0$ \
+    For $i in {1,dots,n-1}$ #i \
+        For $a in {1,dots,min(i,n-i)}$ #i #comment[cosets with atleast two set indices]\
+            For $b in {1,dots,phi(i)}$ #i #comment[number of elements to add]\
+                For $j in {0,1,dots,n div i}$ #i #comment[set indices to add to]\
+                    $A_(a + j i) = A_(a + j i) union {k + b}$ #d \
+                End #d \ 
+            End \
+            $k += phi(i)$ #d \
+        End #d \
+    End \
+    return $A_1,dots,A_n$    
+]
+
+euler identity for $sum_(d|n) phi(d) = n$
 
 = Lower Bounds
 
