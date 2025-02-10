@@ -1,14 +1,14 @@
 # Linear Set Intersection with minimal support
 
-Given a number $n \in \N$, find the minimal number $k \in \N$, such that there are $n$ Sets $A_{1}, \dots, A_{n}$ containing some numbers from $1$ to $k$, i.e $A_i \subseteq \{1,\dots, k\}$ satisfying:
+Given a number $n \in ℕ$, find the minimal number $k \in ℕ$, such that there are $n$ Sets $A_{1}, \dots, A_{n}$ containing some numbers from $1$ to $k$, i.e $A_i \subseteq \\{1,\dots, k\\}$ satisfying:
 
 $$ | A_i \cap A_j | = |i - j| \text{ for all } 1 \leq i < j \leq n$$
 
 For example, for $n = 4$, the answer would be $k = 5$, with which we could pick the $4$ sets as:  
-$A_1 = \{1,2,3,4\}$  
-$A_2 = \{1,5\}$  
-$A_3 = \{1,2\}$  
-$A_4 = \{1,3,4,5\}$  
+$A_1 = \\{ 1,2,3,4\\}$  
+$A_2 = \\{1,5\\}$  
+$A_3 = \\{1,2\\}$  
+$A_4 = \\{1,3,4,5\\}$  
 or a more visual representation:
 
 ```
