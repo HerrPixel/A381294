@@ -40,7 +40,7 @@ end
 
 function IsCorrect(s::SetSolution)
     for i in 1:GetN(s)
-        for j in i:GetN(s)
+        for j in i+1:GetN(s)
             if s.solutionmatrix[i, :]' * s.solutionmatrix[j, :] != j - i
                 return false
             end
@@ -49,7 +49,42 @@ function IsCorrect(s::SetSolution)
     return true
 end
 
-function PrintSolution(s::SetSolution)
+# fix n = 0 and 1
+function ASCIIPrintSolution(s::SetSolution)
+    k = GetK(s)
+    n = GetN(s)
+
+    cellwidth = ceil(Int, log(10, k))
+
+    setnumberingwidth = 1 + ceil(Int, log(10, n))
+
+    for i in 1:n
+        println()
+        print(rpad("A_$i", setnumberingwidth))
+        print(" = {")
+
+        elements = []
+
+        for j in 1:k
+            if s[i, j]
+                push!(elements, j)
+            end
+        end
+
+        print(join(elements, ","))
+
+        print("}")
+
+        if i == n
+            print(".")
+            continue
+        end
+
+        print(",")
+    end
+end
+
+function PrettyPrintSolution(s::SetSolution)
     # To make the output aligned, we calculate the maximum width a cell could need
     # The display of the chosen numbers in the sets takes up the number of digits as width
     cellwidth = ceil(Int, log(10, GetK(s)))
