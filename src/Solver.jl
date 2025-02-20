@@ -8,8 +8,6 @@ function solve(n::Integer, solver, arguments::Vector{Tuple{T,S}} where {T,S})
         set_attribute(model, attribute, value)
     end
 
-    # TODO: add upper bound, warm start
-
     set_string_names_on_creation(model, false)
 
     sets_containing_i, sets_containing_i_and_j = precompute(n)
