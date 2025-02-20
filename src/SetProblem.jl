@@ -5,7 +5,8 @@ include("CombinatorialSolver.jl")
 
 include("Solver.jl")
 export CombinatorialSolver
-export PrintSolution
+export PrettyPrintSolution
+export ASCIIPrintSolution
 export solve
 
 end
