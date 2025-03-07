@@ -19,7 +19,7 @@ A₄:  1     3  4  5
 ```
 
 This repo contains the code we used to find the optimal values for $k$ up to $n=22$. One optimal solution for each $n$ can also be found in the solutions.txt file.
-The found values is sequence [A381294]("https://oeis.org/A381294") in the OEIS. You can also find a paper with current results on my website: [jonasseiler.de/A381294]("https://jonasseiler.de/A381294).
+The found values is sequence [A381294](https://oeis.org/A381294) in the OEIS. You can also find a paper with current results on my website: [jonasseiler.de/A381294](https://jonasseiler.de/A381294).
 
 ## Current known values and bounds
 
