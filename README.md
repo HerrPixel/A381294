@@ -1,4 +1,4 @@
-# Linear Set Intersection with minimal support
+# A381294
 
 Given a number $n \in ℕ$, find the minimal number $k \in ℕ$, such that there are $n$ Sets $A_{1}, \dots, A_{n}$ containing some numbers from $1$ to $k$, i.e $A_i \subseteq \\{1,\dots, k\\}$ satisfying:
 
@@ -18,7 +18,8 @@ A₃:  1  2
 A₄:  1     3  4  5
 ```
 
-This repo contains the code we used to find the optimal values for $k$ up to $n=22$. One optimal solution for each $n$ can also be found in the solutions.txt file
+This repo contains the code we used to find the optimal values for $k$ up to $n=22$. One optimal solution for each $n$ can also be found in the solutions.txt file.
+The found values is sequence [A381294]("https://oeis.org/A381294") in the OEIS. You can also find a paper with current results on my website: [jonasseiler.de/A381294]("https://jonasseiler.de/A381294).
 
 ## Current known values and bounds
 
@@ -102,11 +103,12 @@ You only need to do this once, afterwards you can always run the solver by using
 ```bash
 $ julia --project=.
 
-julia> using SetProblem
+julia> using A381294
 
-julia> PrettyPrintSolution(solve(4))
-A₁:  1  2  3  4
-A₂:  1           5
-A₃:  1  2
-A₄:  1     3  4  5
+julia> solve(3)
+[...]
+SetSolution with n = 3 and k = 2 :
+A₁: 1 2
+A₂: 1
+A₃: 1 2
 ```
