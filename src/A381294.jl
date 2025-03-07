@@ -1,9 +1,8 @@
-module SetProblem
+module A381294
 
 include("Solution.jl")
 include("Solver.jl")
 
-export PrettyPrintSolution
 export ASCIIPrintSolution
 export solve
 
