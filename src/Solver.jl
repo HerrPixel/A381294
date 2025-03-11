@@ -1,6 +1,31 @@
 using JuMP
 using HiGHS
 
+"""
+    solve(n)
+    solve(n,solver)
+    solve(n,solver,arguments)
+
+    Generate the minimal k ∈ ℕ such that there are n sets A_1,…,A_n with each A_i ⊆ {1,…,k} and |A_i ∩ A_j| = |i-j| for each 1 ≤ i < j ≤ n.
+
+    This is done via an ILP formulation, solved by the HiGHS solver. Optionally, one can use another solver and solver specific arguments.
+
+    # Arguments
+
+    - `n::Integer`: the number of sets.
+    - `solver`: a different JuMP solver.
+    - `arguments::Vector{Tuple{T,S}}`: list of keys and values used as arguments for the solver.
+
+    # Examples
+    ```jldoctest
+    julia> solve(3)
+    [...]
+    SetSolution with n = 3 and k = 2 :
+    A₁: 1 2
+    A₂: 1
+    A₃: 1 2
+    ```
+"""
 function solve(n::Integer, solver, arguments::Vector{Tuple{T,S}} where {T,S})
     model = Model(solver)
 
