@@ -92,7 +92,7 @@ For a few values of $n$, the number of different optimal solutions, up to renami
 | $7$  | $24$       | $110$          | $69$             |
 | $8$  | $36$       | $4373$         | $2260$           |
 | $9$  | $50$       | $147289$       | $74421$          |
-| $10$ | $70$       | $\ge 582517$   |
+| $10$ | $70$       | $\ge 582517$   |                  |
 
 ## Trying it out yourself
 
