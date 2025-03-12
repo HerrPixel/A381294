@@ -5,7 +5,7 @@ Given a number $n \in ℕ$, find the minimal number $k \in ℕ$, such that there
 $$ | A_i \cap A_j | = |i - j| \text{ for all } 1 \leq i < j \leq n$$
 
 For example, for $n = 4$, the answer would be $k = 5$, with which we could pick the $4$ sets as:  
-$A_1 = \\{ 1,2,3,4\\}$  
+$A_1 = \\{1,2,3,4\\}$  
 $A_2 = \\{1,5\\}$  
 $A_3 = \\{1,2\\}$  
 $A_4 = \\{1,3,4,5\\}$  
@@ -79,6 +79,20 @@ Where an upper bound for $k$ is given, it is known from a constructed (albeit po
 | $47$ | $\le 7058$ |
 | $48$ | $\le 7520$ |
 | $49$ | $\le 8008$ |
+
+For a few values of $n$, the number of different optimal solutions, up to renaming of elements, is known as well. The last column also counts solutions obtained by reversing the order of $A_{1}, \dots, A_{n}$ as the same.
+
+| $n$  | $k$        | # of solutions | # up to symmetry |
+| ---- | ---------- | -------------- | ---------------- |
+| $2$  | $1$        | $1$            | $1$              |
+| $3$  | $2$        | $1$            | $1$              |
+| $4$  | $5$        | $1$            | $1$              |
+| $5$  | $9$        | $3$            | $3$              |
+| $6$  | $16$       | $25$           | $15$             |
+| $7$  | $24$       | $110$          | $69$             |
+| $8$  | $36$       | $4373$         | $2260$           |
+| $9$  | $50$       | $147289$       | $74421$          |
+| $10$ | $70$       | $\ge 582517$   |
 
 ## Trying it out yourself
 
